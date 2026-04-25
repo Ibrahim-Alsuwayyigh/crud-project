@@ -1,7 +1,7 @@
 import { getDailyStats, getMonthlyStats } from "../services/statsService"
 
-function Analytics() {
-  const dailyStats = getDailyStats()
+function Analytics({ orders })  {
+ const dailyStats = getDailyStats(orders)
 const monthlyStats = getMonthlyStats()
   const comparisonRows = [
     {

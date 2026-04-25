@@ -1,83 +1,89 @@
+import { useState } from "react"
+
+import {
+  corporate,
+  provider,
+  daRequiredOptions,
+  cities,
+  pickupTimes,
+  statusOptions,
+} from "../data/formOptions"
+
 import {
   daRequiredColors,
   corporateColors,
   cityColors,
+  statusColors,
 } from "../data/badgeColors"
 
-import { statusOptions } from "../data/formOptions"
-
-import { statusColors } from "../data/badgeColors"
-
-import { useState } from "react"
-
 import {
-  getOrders,
   createOrder,
   updateOrder,
   deleteOrder,
 } from "../services/orderService"
 
-function ManageData() {
- const emptyForm = {
-  corporate: "Tawuniya",
-  guid: "",
-  daRequired: "Taqdeer",
-  city: "Riyadh",
-  provider: "",
-  status: "Assigned",
-  pickupDate: "",
-  pickupTime: "08:00",
-  customerName: "",
-  customerPhone: "",
-  createdBy: "Ali S",
-}
+function ManageData({ orders, setOrders }) {
+  const emptyForm = {
+    corporate: "Tawuniya",
+    guid: "",
+    daRequired: "Taqdeer",
+    city: "Riyadh",
+    provider: "",
+    status: "Assigned",
+    pickupDate: "",
+    pickupTime: "08:00",
+    customerName: "",
+    customerPhone: "",
+    createdBy: "Ali S",
+  }
 
   const [formData, setFormData] = useState(emptyForm)
-
   const [editingId, setEditingId] = useState(null)
-
- const [orders, setOrders] = useState(getOrders())
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }))
   }
 
-const handleSubmit = (e) => {
-  e.preventDefault()
+  const handleSubmit = (e) => {
+    e.preventDefault()
 
-  if (editingId) {
-    setOrders((prev) => updateOrder(prev, editingId, formData))
-    setEditingId(null)
-  } else {
-    setOrders((prev) => createOrder(prev, formData))
+    if (editingId) {
+      setOrders((prev) => updateOrder(prev, editingId, formData))
+      setEditingId(null)
+    } else {
+      setOrders((prev) => createOrder(prev, formData))
+    }
+
+    setFormData(emptyForm)
   }
 
-  setFormData(emptyForm)
-}
-const handleEdit = (order) => {
-  setFormData({
-    corporate: order.corporate,
-    guid: order.guid,
-    daRequired: order.daRequired,
-    city: order.city,
-    provider: order.provider,
-    pickupDate: order.pickupDate,
-    pickupTime: order.pickupTime,
-    customerName: order.customerName,
-    customerPhone: order.customerPhone,
-    createdBy: order.createdBy,
-  })
+  const handleEdit = (order) => {
+    setFormData({
+      corporate: order.corporate,
+      guid: order.guid,
+      daRequired: order.daRequired,
+      city: order.city,
+      provider: order.provider,
+      status: order.status,
+      pickupDate: order.pickupDate,
+      pickupTime: order.pickupTime,
+      customerName: order.customerName,
+      customerPhone: order.customerPhone,
+      createdBy: order.createdBy,
+    })
 
-  setEditingId(order.id)
-}
+    setEditingId(order.id)
+  }
 
- const handleDelete = (id) => {
-  setOrders((prev) => deleteOrder(prev, id))
-}
+  const handleDelete = (id) => {
+    setOrders((prev) => deleteOrder(prev, id))
+  }
 
   return (
     <>
@@ -90,7 +96,10 @@ const handleEdit = (order) => {
           Add New Order
         </h2>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Corporate
@@ -102,7 +111,6 @@ const handleEdit = (order) => {
               className="w-full border rounded-lg px-3 py-2"
               required
             >
-              <option value="">Select corporate</option>
               {corporate.map((corp) => (
                 <option key={corp} value={corp}>
                   {corp}
@@ -137,7 +145,6 @@ const handleEdit = (order) => {
               className="w-full border rounded-lg px-3 py-2"
               required
             >
-              <option value="">Select option</option>
               {daRequiredOptions.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -157,7 +164,6 @@ const handleEdit = (order) => {
               className="w-full border rounded-lg px-3 py-2"
               required
             >
-              <option value="">Select city</option>
               {cities.map((city) => (
                 <option key={city} value={city}>
                   {city}
@@ -187,26 +193,23 @@ const handleEdit = (order) => {
           </div>
 
           <div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    Status
-  </label>
-
-  <select
-    name="status"
-    value={formData.status}
-    onChange={handleChange}
-    className="w-full border rounded-lg px-3 py-2"
-    required
-  >
-    <option value="">Select status</option>
-
-    {statusOptions.map((status) => (
-      <option key={status} value={status}>
-        {status}
-      </option>
-    ))}
-  </select>
-</div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Status
+            </label>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-3 py-2"
+              required
+            >
+              {statusOptions.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -233,7 +236,6 @@ const handleEdit = (order) => {
               className="w-full border rounded-lg px-3 py-2"
               required
             >
-              <option value="">Select time</option>
               {pickupTimes.map((time) => (
                 <option key={time} value={time}>
                   {time}
@@ -282,7 +284,6 @@ const handleEdit = (order) => {
               value={formData.createdBy}
               onChange={handleChange}
               className="w-full border rounded-lg px-3 py-2"
-              placeholder="Enter creator name"
               required
             />
           </div>
@@ -295,16 +296,16 @@ const handleEdit = (order) => {
               {editingId ? "Update Order" : "Save Order"}
             </button>
 
-          <button
-  type="button"
-  onClick={() => {
-    setFormData(emptyForm)
-    setEditingId(null)
-  }}
-  className="bg-gray-200 text-gray-800 px-5 py-2 rounded-lg hover:bg-gray-300"
->
-  Clear
-</button>
+            <button
+              type="button"
+              onClick={() => {
+                setFormData(emptyForm)
+                setEditingId(null)
+              }}
+              className="bg-gray-200 text-gray-800 px-5 py-2 rounded-lg hover:bg-gray-300"
+            >
+              Clear
+            </button>
           </div>
         </form>
       </div>
@@ -314,81 +315,100 @@ const handleEdit = (order) => {
           Current Orders
         </h2>
 
-       <div className="overflow-x-auto">
-  <table className="w-full text-left border-collapse">
-    <thead>
-      <tr className="border-b">
-        <th className="py-3 px-4">Corporate</th>
-        <th className="py-3 px-4">GUID</th>
-        <th className="py-3 px-4">DA Required</th>
-        <th className="py-3 px-4">City</th>
-        <th className="py-3 px-4">Provider</th>
-        <th className="py-3 px-4">Status</th>
-        <th className="py-3 px-4">Pickup Date</th>
-        <th className="py-3 px-4">Pickup Time</th>
-        <th className="py-3 px-4">Customer</th>
-        <th className="py-3 px-4">Phone</th>
-        <th className="py-3 px-4">Created By</th>
-        <th className="py-3 px-4">Actions</th>
-      </tr>
-    </thead>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b">
+                <th className="py-3 px-4">Corporate</th>
+                <th className="py-3 px-4">GUID</th>
+                <th className="py-3 px-4">DA Required</th>
+                <th className="py-3 px-4">City</th>
+                <th className="py-3 px-4">Provider</th>
+                <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4">Pickup Date</th>
+                <th className="py-3 px-4">Pickup Time</th>
+                <th className="py-3 px-4">Customer</th>
+                <th className="py-3 px-4">Phone</th>
+                <th className="py-3 px-4">Created By</th>
+                <th className="py-3 px-4">Actions</th>
+              </tr>
+            </thead>
 
-    <tbody>
-      {orders.map((order) => (
-        <tr key={order.id} className="border-b">
-          <td className="py-3 px-4">
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${corporateColors[order.corporate] || "bg-gray-100 text-gray-700"}`}>
-              {order.corporate}
-            </span>
-          </td>
+            <tbody>
+              {orders.map((order) => (
+                <tr key={order.id} className="border-b">
+                  <td className="py-3 px-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        corporateColors[order.corporate] ||
+                        "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {order.corporate}
+                    </span>
+                  </td>
 
-          <td className="py-3 px-4">{order.guid}</td>
+                  <td className="py-3 px-4">{order.guid}</td>
 
-          <td className="py-3 px-4">
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${daRequiredColors[order.daRequired] || "bg-gray-100 text-gray-700"}`}>
-              {order.daRequired}
-            </span>
-          </td>
+                  <td className="py-3 px-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        daRequiredColors[order.daRequired] ||
+                        "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {order.daRequired}
+                    </span>
+                  </td>
 
-          <td className="py-3 px-4">
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${cityColors[order.city] || "bg-gray-100 text-gray-700"}`}>
-              {order.city}
-            </span>
-          </td>
+                  <td className="py-3 px-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        cityColors[order.city] || "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {order.city}
+                    </span>
+                  </td>
 
-          <td className="py-3 px-4">{order.provider}</td>
+                  <td className="py-3 px-4">{order.provider}</td>
 
-          <td className="py-3 px-4">
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[order.status] || "bg-gray-100 text-gray-700"}`}>
-              {order.status}
-            </span>
-          </td>
+                  <td className="py-3 px-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        statusColors[order.status] ||
+                        "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {order.status}
+                    </span>
+                  </td>
 
-          <td className="py-3 px-4">{order.pickupDate}</td>
-          <td className="py-3 px-4">{order.pickupTime}</td>
-          <td className="py-3 px-4">{order.customerName}</td>
-          <td className="py-3 px-4">{order.customerPhone}</td>
-          <td className="py-3 px-4">{order.createdBy}</td>
+                  <td className="py-3 px-4">{order.pickupDate}</td>
+                  <td className="py-3 px-4">{order.pickupTime}</td>
+                  <td className="py-3 px-4">{order.customerName}</td>
+                  <td className="py-3 px-4">{order.customerPhone}</td>
+                  <td className="py-3 px-4">{order.createdBy}</td>
 
-          <td className="py-3 px-4">
-            <div className="flex gap-2">
-              <button
-                className="bg-yellow-400 text-white px-3 py-1 rounded-lg hover:bg-yellow-500"
-                onClick={() => handleEdit(order)}
-              >
-                Edit
-              </button>
+                  <td className="py-3 px-4">
+                    <div className="flex gap-2">
+                      <button
+                        className="bg-yellow-400 text-white px-3 py-1 rounded-lg hover:bg-yellow-500"
+                        onClick={() => handleEdit(order)}
+                      >
+                        Edit
+                      </button>
 
-              <button
-                className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
-                onClick={() => handleDelete(order.id)}
-              >
-                Delete
-              </button>
-            </div>
-          </td>
-        </tr>
-                   ))}
+                      <button
+                        className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
+                        onClick={() => handleDelete(order.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

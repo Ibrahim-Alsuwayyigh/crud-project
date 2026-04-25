@@ -12,13 +12,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
-function Dashboard() {
+function Dashboard({ orders }) {
   const [cityFilter, setCityFilter] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
   const [daFilter, setDaFilter] = useState("")
   const [providerFilter, setProviderFilter] = useState("")
 
-  const orders = getOrders()
+  
 
 const filteredOrders = orders.filter((order) =>  {
     return (

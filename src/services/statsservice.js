@@ -1,25 +1,10 @@
-import { getOrders } from "./orderService"
-
-export const getDailyStats = () => {
-  const orders = getOrders()
-
+export const getDailyStats = (orders) => {
   const totalOrders = orders.length
 
-  const assigned = orders.filter(
-    (o) => o.status === "Assigned"
-  ).length
-
-  const completed = orders.filter(
-    (o) => o.status === "Completed"
-  ).length
-
-  const cancelled = orders.filter(
-    (o) => o.status === "Cancelled"
-  ).length
-
-  const taqdeer = orders.filter(
-    (o) => o.daRequired === "Taqdeer"
-  ).length
+  const assigned = orders.filter((o) => o.status === "Assigned").length
+  const completed = orders.filter((o) => o.status === "Completed").length
+  const cancelled = orders.filter((o) => o.status === "Cancelled").length
+  const taqdeer = orders.filter((o) => o.daRequired === "Taqdeer").length
 
   const percent = (value) =>
     totalOrders === 0 ? 0 : Math.round((value / totalOrders) * 100)
