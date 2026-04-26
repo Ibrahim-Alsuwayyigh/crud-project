@@ -4,15 +4,23 @@ import Dashboard from "./pages/Dashboard"
 import ManageData from "./pages/ManageData"
 import Analytics from "./pages/Analytics"
 import { getOrders } from "./services/orderService"
+import { useEffect} from "react"
 
 function App() {
-  const [orders, setOrders] = useState(getOrders())
+  const [orders, setOrders] = useState([])
 
-  const navClass = ({ isActive }) =>
-    isActive
-      ? "block rounded-lg px-4 py-2 bg-blue-500 text-white font-medium"
-      : "block rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-200"
+useEffect(() => {
+  loadOrders()
+}, [])
 
+const loadOrders = async () => {
+  const data = await getOrders()
+  setOrders(Array.isArray(data) ? data : [])
+}
+const navClass = ({ isActive }) =>
+  isActive
+    ? "block rounded-lg px-4 py-2 bg-blue-500 text-white font-medium"
+    : "block rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-200"
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-gray-100 flex">
@@ -39,11 +47,18 @@ function App() {
         <main className="flex-1 p-6">
           <Routes>
             <Route path="/" element={<Dashboard orders={orders} />} />
-            <Route
-              path="/manage"
-              element={<ManageData orders={orders} setOrders={setOrders} />}
-            />
             <Route path="/analytics" element={<Analytics orders={orders} />} />
+           <Route
+  path="/manage"
+  element={
+    <ManageData
+      orders={orders}
+      setOrders={setOrders}
+      loadOrders={loadOrders}
+    />
+  }
+/>
+
           </Routes>
         </main>
       </div>

@@ -22,7 +22,7 @@ import {
   deleteOrder,
 } from "../services/orderService"
 
-function ManageData({ orders, setOrders }) {
+function ManageData({ orders, setOrders, loadOrders }) {
   const emptyForm = {
     corporate: "Tawuniya",
     guid: "",
@@ -30,7 +30,7 @@ function ManageData({ orders, setOrders }) {
     city: "Riyadh",
     provider: "",
     status: "Assigned",
-    pickupDate: "",
+   pickupDate: new Date().toISOString().split("T")[0],
     pickupTime: "08:00",
     customerName: "",
     customerPhone: "",
@@ -39,7 +39,6 @@ function ManageData({ orders, setOrders }) {
 
   const [formData, setFormData] = useState(emptyForm)
   const [editingId, setEditingId] = useState(null)
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -50,18 +49,21 @@ function ManageData({ orders, setOrders }) {
     }))
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+  e.preventDefault()
 
-    if (editingId) {
-      setOrders((prev) => updateOrder(prev, editingId, formData))
-      setEditingId(null)
-    } else {
-      setOrders((prev) => createOrder(prev, formData))
-    }
-
-    setFormData(emptyForm)
+  if (editingId) {
+    const result = await updateOrder(editingId, formData)
+    console.log("Update result:", result)
+    setEditingId(null)
+  } else {
+    const result = await createOrder(formData)
+    console.log("Create result:", result)
   }
+
+  await loadOrders()
+  setFormData(emptyForm)
+}
 
   const handleEdit = (order) => {
     setFormData({
@@ -81,8 +83,15 @@ function ManageData({ orders, setOrders }) {
     setEditingId(order.id)
   }
 
-  const handleDelete = (id) => {
-    setOrders((prev) => deleteOrder(prev, id))
+  const handleDelete = async (id) => {
+    const handleDelete = async (id) => {
+  await deleteOrder(id)
+  await loadOrders()
+}
+
+    if (success) {
+      setOrders((prev) => prev.filter((order) => order.id !== id))
+    }
   }
 
   return (
@@ -93,7 +102,7 @@ function ManageData({ orders, setOrders }) {
 
       <div className="bg-white rounded-2xl shadow p-6 mb-8">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
-          Add New Order
+          {editingId ? "Edit Order" : "Add New Order"}
         </h2>
 
         <form
